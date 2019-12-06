@@ -114,6 +114,10 @@
       <Project>{c0475032-15f9-458c-a892-c0b76a0581aa}</Project>
       <Name>FactElec.CapaEntidad</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FactElec.Logger\FactElec.Log.csproj">
+      <Project>{9b8ae09a-8563-48de-84cb-45827f319816}</Project>
+      <Name>FactElec.Log</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FactElec.LogicaProcesos\FactElec.LogicaProceso.csproj">
       <Project>{9235e27f-6aff-418b-827a-e94e4244f92f}</Project>
       <Name>FactElec.LogicaProceso</Name>
