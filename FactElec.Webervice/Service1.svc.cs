@@ -50,6 +50,7 @@ namespace FactElec.WebService
                     oRespuesta = lp.RegistroComprobante(Comprobante);
                 }
             }
+            
             log.Info("Fin del proceso");
             return oRespuesta;
         }
