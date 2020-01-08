@@ -1,4 +1,5 @@
-﻿using FactElec.CapaEntidad.RegistroComprobante;
+﻿using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
+using FactElec.CapaEntidad.RegistroComprobante;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,53 @@ namespace FactElec.CapaDatos
     {
         readonly string connectionString = ConfigurationManager.ConnectionStrings["cnx"].ConnectionString;
         readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Da_Comprobante));
+
+        public En_SalidaObtenerRI ObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada, ref string mensajeRetorno)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_ObtenerRepresentacionImpresa", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@NumeroDocumento", SqlDbType = SqlDbType.VarChar, Size = 20, Value = entrada.NumeroDocumento });
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@SerieNumero", SqlDbType = SqlDbType.VarChar, Size = 20, Value = string.Format("{0}-{1}", entrada.Serie, entrada.Numero) });
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@TipoComprobante", SqlDbType = SqlDbType.VarChar, Size = 10, Value = entrada.TipoComprobante });
+
+            try
+            {
+                En_SalidaObtenerRI salida = null;
+
+                cn.Open();
+                SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+                if (dr.Read())
+                {
+                    salida = new En_SalidaObtenerRI
+                    {
+                        NombreArchivo = (dr.IsDBNull(dr.GetOrdinal("NombrePDF"))) ? "" : dr.GetString(dr.GetOrdinal("NombrePDF")),
+                        ContenidoArchivo = (dr.IsDBNull(dr.GetOrdinal("ArchivoPDF"))) ? null : (byte[])dr[dr.GetOrdinal("ArchivoPDF")]
+                    };
+                }
+
+                cn.Close();
+
+                mensajeRetorno = "";
+                return salida;
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = ex.Message.ToString();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = "Ocurrió un error al obtener la representación impresa del comprobante, revisar el log.";
+                log.Error(mensajeRetorno, ex);
+                return null;
+            }
+        }
 
         public En_Emisor ObtenerEmisor(string numeroDocumentoIdentidad, ref string mensajeRetorno)
         {

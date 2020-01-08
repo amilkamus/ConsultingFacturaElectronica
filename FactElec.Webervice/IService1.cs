@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
 using FactElec.CapaEntidad.RegistroComprobante;
 
 namespace FactElec.WebService
@@ -13,10 +14,12 @@ namespace FactElec.WebService
     [ServiceContract]
     public interface IService1
     {
-                
+
         [OperationContract]
         En_Respuesta RegistroComprobante(En_ComprobanteElectronico Comprobante);
-        
+        [OperationContract]
+        En_SalidaObtenerRI ObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada);
+
     }
-    
+
 }

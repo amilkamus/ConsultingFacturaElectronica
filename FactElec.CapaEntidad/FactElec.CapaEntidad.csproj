@@ -52,6 +52,8 @@
     <Compile Include="ComprobanteElectronico\Invoice\InvoiceType.cs">
       <SubType>code</SubType>
     </Compile>
+    <Compile Include="ObtenerRepresentacionImpresa\En_EntradaObtenerRI.cs" />
+    <Compile Include="ObtenerRepresentacionImpresa\En_SalidaObtenerRI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistroComprobante\En_ComprobanteElectronico.cs" />
     <Compile Include="RegistroComprobante\En_ComprobanteDetalle.cs" />

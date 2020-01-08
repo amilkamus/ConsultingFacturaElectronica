@@ -1,4 +1,5 @@
 ﻿using FactElec.CapaDatos;
+using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
 using FactElec.CapaEntidad.RegistroComprobante;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,53 @@ namespace FactElec.LogicaProceso
 {
     public class Lp_Validacion
     {
+        public static En_SalidaObtenerRI ValidarObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada, ref bool esValido) {
+            En_SalidaObtenerRI salida = new En_SalidaObtenerRI();
+
+            if (entrada == null)
+            {                
+                salida.Codigo = "1";
+                salida.Descripcion = "No se ha enviado la entidad En_EntradaObtenerRI";
+                esValido = false;
+                return salida;
+            }
+
+            if (EsTextoVacio(entrada.NumeroDocumento))
+            {
+                salida.Codigo = "2";
+                salida.Descripcion = "No se ha enviado el número de documento de identidad del emisor";
+                esValido = false;
+                return salida;
+            }
+
+            if (EsTextoVacio(entrada.Serie))
+            {
+                salida.Codigo = "3";
+                salida.Descripcion = "No se ha enviado la serie del comprobante consultado";
+                esValido = false;
+                return salida;
+            }
+
+            if (EsTextoVacio(entrada.Numero))
+            {
+                salida.Codigo = "4";
+                salida.Descripcion = "No se ha enviado el número correlativo del comprobante consultado";
+                esValido = false;
+                return salida;
+            }
+
+            if (EsTextoVacio(entrada.TipoComprobante))
+            {
+                salida.Codigo = "5";
+                salida.Descripcion = "No se ha enviado el tipo del comprobante consultado";
+                esValido = false;
+                return salida;
+            }
+
+            esValido = true;
+            return salida;
+        }
+
         public static En_Respuesta ComprobanteValido(En_ComprobanteElectronico comprobante, ref bool esValido)
         {
             En_Respuesta respuesta = new En_Respuesta();

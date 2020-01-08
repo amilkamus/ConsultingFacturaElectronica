@@ -1,15 +1,16 @@
 ﻿using FactElec.CapaDatos;
+using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
 using FactElec.CapaEntidad.RegistroComprobante;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FactElec.LogicaProceso
 {
     public class Lp_Comprobante
     {
+        public En_SalidaObtenerRI ObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada, ref string mensajeRetorno)
+        {
+            Da_Comprobante daComprobante = new Da_Comprobante();
+            return daComprobante.ObtenerRepresentacionImpresa(entrada, ref mensajeRetorno);
+        }
         public En_Emisor ObtenerEmisor(string numeroDocumentoIdentidad, ref string mensajeRetorno)
         {
             Da_Comprobante daComprobante = new Da_Comprobante();
