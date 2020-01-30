@@ -52,9 +52,15 @@
     <Compile Include="ComprobanteElectronico\Invoice\InvoiceType.cs">
       <SubType>code</SubType>
     </Compile>
+    <Compile Include="EnvioComprobante\En_Archivo.cs" />
+    <Compile Include="EnvioCorreo\En_Archivo.cs" />
+    <Compile Include="EnvioCorreo\En_Comprobante.cs" />
+    <Compile Include="EnvioCorreo\En_Correo.cs" />
+    <Compile Include="GenerarPDF\En_Archivo.cs" />
     <Compile Include="ObtenerRepresentacionImpresa\En_EntradaObtenerRI.cs" />
     <Compile Include="ObtenerRepresentacionImpresa\En_SalidaObtenerRI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EnvioComprobante\En_Comprobante.cs" />
     <Compile Include="RegistroComprobante\En_ComprobanteElectronico.cs" />
     <Compile Include="RegistroComprobante\En_ComprobanteDetalle.cs" />
     <Compile Include="RegistroComprobante\En_ComprobanteDetalleImpuestos.cs" />
@@ -71,6 +77,8 @@
     <Compile Include="RegistroComprobante\En_Emisor.cs" />
     <Compile Include="RegistroComprobante\En_Respuesta.cs" />
     <Compile Include="RegistroComprobante\En_Validacion.cs" />
+    <Compile Include="SincronizarComprobante\En_Archivo.cs" />
+    <Compile Include="SincronizarComprobante\En_Respuesta.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
-﻿using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
+﻿using FactElec.CapaEntidad.EnvioComprobante;
+using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
 using FactElec.CapaEntidad.RegistroComprobante;
 using System;
 using System.Collections.Generic;
@@ -6,9 +7,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FactElec.CapaDatos
 {
@@ -258,5 +257,172 @@ namespace FactElec.CapaDatos
                 return false;
             }
         }
+        
+        public void InsertarCdrPendiente(long idComprobante, byte[] archivo)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_InsertarCdrPendiente", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@IdComprobante", SqlDbType = SqlDbType.BigInt, Value = idComprobante });
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@Archivo", SqlDbType = SqlDbType.VarBinary, Value = archivo });
+
+            try
+            {
+                cn.Open();
+                cmd.ExecuteNonQuery();
+                cn.Close();
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                throw ex;
+            }
+        }
+
+        public int QuitarPendienteEnvio(long idComprobante, string codigoRespuesta)
+        {
+            int resultado = 0;
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_QuitarPendienteEnvio", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@IdComprobante", SqlDbType = SqlDbType.BigInt, Value = idComprobante });
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@codigoRespuesta", SqlDbType = SqlDbType.VarChar, Size = 20, Value = codigoRespuesta });
+
+            try
+            {
+                cn.Open();
+                resultado = (int)cmd.ExecuteScalar();
+                cn.Close();
+                return resultado;
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                throw ex;
+            }
+        }
+
+        public List<En_Comprobante> ComprobantesPendientesDeEnvio()
+        {
+            List<En_Comprobante> comprobantes = new List<En_Comprobante>();
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_ComprobantesPendientesDeEnvio", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            try
+            {
+                cn.Open();
+
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    En_Comprobante comprobante = new En_Comprobante();
+                    comprobante.RucEmisor = (string)(dr[0]);
+                    comprobante.IdComprobante = (long)dr[1];
+                    comprobante.TipoComprobante = (string)dr[2];
+                    comprobante.SerieNumero = (string)dr[3];
+                    comprobantes.Add(comprobante);
+                }
+
+                cn.Close();
+
+                return comprobantes;
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                throw ex;
+            }
+        }
+
+        public List<FactElec.CapaEntidad.SincronizarComprobante.En_Archivo> ObtenerRespuestaPendiente()
+        {
+            List<FactElec.CapaEntidad.SincronizarComprobante.En_Archivo> listaArchivo = new List<FactElec.CapaEntidad.SincronizarComprobante.En_Archivo>();
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            SqlCommand cmd = new SqlCommand();
+
+            try
+            {
+                SqlDataReader dr = SqlHelper.ExecuteReader("usp_ListaCDRPendiente", parameters);
+
+                while (dr.Read())
+                {
+                    FactElec.CapaEntidad.SincronizarComprobante.En_Archivo Archivo = new FactElec.CapaEntidad.SincronizarComprobante.En_Archivo();
+                    Archivo.Archivo = (byte[])(dr[1]);
+                    Archivo.IdComprobante = (long)dr[0];
+                    Archivo.FechaRegistro = (DateTime)dr[2];
+                    listaArchivo.Add(Archivo);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return listaArchivo;
+        }
+        public string RutaTemporalCdr(string codigo)
+        {
+
+            string ruta = "";
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            parameters.Add(new SqlParameter { ParameterName = "@codigo", SqlDbType = SqlDbType.VarChar, Size = 10, Value = codigo });
+
+            try
+            {
+                DataTable tablaconfiguracion = SqlHelper.FillDataTable("usp_ListaConfiguracion", parameters);
+                ruta = tablaconfiguracion.Rows[0][1].ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return ruta;
+        }
+
+        public int RegistrarRespuestaSunat(FactElec.CapaEntidad.SincronizarComprobante.En_Respuesta oRespuesta)
+        {
+            int respuesta = 0;
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            parameters.Add(new SqlParameter { ParameterName = "@CodigoSUNAT", SqlDbType = SqlDbType.VarChar, Size = 50, Value = oRespuesta.Codigo });
+            parameters.Add(new SqlParameter { ParameterName = "@IdComprobante", SqlDbType = SqlDbType.BigInt, Value = oRespuesta.Idcomprobante });
+            parameters.Add(new SqlParameter { ParameterName = "@Archivo", SqlDbType = SqlDbType.VarBinary, Value = oRespuesta.Archivo });
+            parameters.Add(new SqlParameter { ParameterName = "@Descripcion", SqlDbType = SqlDbType.VarChar, Value = oRespuesta.Descripcion });
+            parameters.Add(new SqlParameter { ParameterName = "@FechaSunat", SqlDbType = SqlDbType.VarChar, Size = 20, Value = oRespuesta.FecharespuestaSunat });
+            parameters.Add(new SqlParameter { ParameterName = "@HoraSunat", SqlDbType = SqlDbType.VarChar, Size = 20, Value = oRespuesta.HoraRespuestaSunat });
+
+            try
+            {
+                respuesta = SqlHelper.ExecuteNonQuery("usp_RegistraRespuestaSUNAT", parameters);
+                return respuesta;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

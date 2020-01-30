@@ -14,9 +14,31 @@ namespace FactElec.WebApi.Controllers
         // GET: api/Programado
         public HttpResponseMessage Get()
         {
+
             string mensajeRetorno = "";
             Lp_Comprobante lpComprobante = new Lp_Comprobante();
             bool resultado = lpComprobante.InsertarProgramacion(ref mensajeRetorno);
+
+            if (resultado)
+            {
+                // Enviar comprobantes
+                Lp_EnvioComprobante lpEnvioComprobante = new Lp_EnvioComprobante();
+                lpEnvioComprobante.ProcesarEnviarComprobantes();
+
+                // Sincronizar comprobantes
+                Lp_SincronizarComprobante lpSincronizarComprobante = new Lp_SincronizarComprobante();
+                lpSincronizarComprobante.ProcesarCDR();
+
+                // Generar PDF
+                Lp_GenerarPDF lpGenerarPDF = new Lp_GenerarPDF();
+                lpGenerarPDF.ProcesarRepresentacionImpresa();
+
+                // Enviar correo
+                Lp_EnvioCorreo lpEnvioCorreo = new Lp_EnvioCorreo();
+                lpEnvioCorreo.ProcesarRegistroCorreo();
+                lpEnvioCorreo.ProcesarEnvioCorreo();
+
+            }
 
             En_Respuesta oRespuesta = new En_Respuesta();
             if (resultado) oRespuesta.Codigo = "0";

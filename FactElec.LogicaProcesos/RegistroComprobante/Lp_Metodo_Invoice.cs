@@ -41,7 +41,7 @@ namespace FactElec.LogicaProceso.RegistroComprobante
                 oRespuesta.Codigo = (resultado) ? "0" : "99";
                 oRespuesta.Descripcion = mensajeRetorno;
 
-                string carpetaTemp = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temporal");                
+                string carpetaTemp = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temporal");
                 rutaXML = Path.Combine(carpetaTemp, nombreXML);
                 if (File.Exists(rutaXML)) File.Delete(rutaXML);
             }
@@ -723,36 +723,36 @@ namespace FactElec.LogicaProceso.RegistroComprobante
                 {
                     ID = new IDType
                     {
-                        Value = Receptor.CodigoUbigeo.Trim(),
+                        Value = Receptor.CodigoUbigeo,
                         schemeAgencyName = "PE:INEI",
                         schemeName = "Ubigeos"
                     },
                     AddressTypeCode = new AddressTypeCodeType
                     {
-                        Value = Receptor.CodigoDomicilioFiscal.Trim(),
+                        Value = Receptor.CodigoDomicilioFiscal,
                         listAgencyName = "PE:SUNAT",
                         listName = "Establecimientos anexos"
                     },
                     CitySubdivisionName = new CitySubdivisionNameType
                     {
-                        Value = Receptor.Urbanizacion.Trim()
+                        Value = Receptor.Urbanizacion
                     },
                     CityName = new CityNameType
                     {
-                        Value = Receptor.Provincia.Trim()
+                        Value = Receptor.Provincia
                     },
                     CountrySubentity = new CountrySubentityType
                     {
-                        Value = Receptor.Departamento.Trim()
+                        Value = Receptor.Departamento
                     },
                     District = new DistrictType
                     {
-                        Value = Receptor.Distrito.Trim()
+                        Value = Receptor.Distrito
                     },
                     AddressLine = new AddressLineType[] {
                         new AddressLineType {
                             Line =new LineType{
-                                Value =Receptor.Direccion.Trim()
+                                Value =Receptor.Direccion
                             }
                         }
                     },
@@ -763,10 +763,9 @@ namespace FactElec.LogicaProceso.RegistroComprobante
                             listAgencyName = "United Nations Economic Commission for Europe",
                             listID = "ISO 3166-1",
                             listName = "Country",
-                            Value = Receptor.CodigoPais.Trim()
+                            Value = Receptor.CodigoPais
                         }
                     }
-
                 }
             };
 
