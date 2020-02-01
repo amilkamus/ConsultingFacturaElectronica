@@ -253,11 +253,42 @@ namespace FactElec.CapaDatos
             catch (Exception ex)
             {
                 if (cn.State == ConnectionState.Open) { cn.Close(); }
-                mensajeRetorno = "Ocurrió un error al registrar el comprobante, excepción: " + ex.Message.ToString();
+                mensajeRetorno = "Ocurrió un error al registrar la programación, excepción: " + ex.Message.ToString();
                 return false;
             }
         }
-        
+
+        public bool QuitarProgramacion(ref string mensajeRetorno)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_QuitarProgramacion", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            try
+            {
+                cn.Open();
+                cmd.ExecuteNonQuery();
+                cn.Close();
+                mensajeRetorno = "Se quitó la programación satisfactoriamente.";
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = ex.Message.ToString();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = "Ocurrió un error al quitar la programación, excepción: " + ex.Message.ToString();
+                return false;
+            }
+        }
+
+
         public void InsertarCdrPendiente(long idComprobante, byte[] archivo)
         {
             SqlConnection cn = new SqlConnection(connectionString);

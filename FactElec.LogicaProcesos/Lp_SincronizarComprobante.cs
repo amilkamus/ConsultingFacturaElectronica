@@ -26,9 +26,9 @@ namespace FactElec.LogicaProceso
         {
             List<En_Archivo> listaRespuesta = new List<En_Archivo>();
             listaRespuesta = ObtenerRespuestaPendiente();
-            log.Info("Cantidad es " + listaRespuesta.Count.ToString());
             if (listaRespuesta.Count > 0)
             {
+                log.InfoFormat("Se inicia la sincronización de CDRs, cantidad: {0}.", listaRespuesta.Count);
                 Task[] taskArray = new Task[listaRespuesta.Count];
 
                 int index = 0;
@@ -41,6 +41,11 @@ namespace FactElec.LogicaProceso
                     }
                 }
                 Task.WaitAll(taskArray.ToArray());
+                log.InfoFormat("Se ha terminado la sincronización de CDRs, cantidad: {0}.", listaRespuesta.Count);
+            }
+            else
+            {
+                log.Info("No hay CDRs pendientes de sincronización.");
             }
         }
 

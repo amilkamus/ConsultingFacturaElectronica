@@ -36,6 +36,10 @@ namespace FactElec.LogicaProceso
                     Task.WaitAll(taskArray.ToArray());
                     log.InfoFormat("Se ha terminado el registro de los correos, cantidad: {0}.", comprobantes.Count());
                 }
+                else
+                {
+                    log.Info("No hay correos pendientes de generar.");
+                }
             }
             catch (Exception ex)
             {
@@ -55,6 +59,7 @@ namespace FactElec.LogicaProceso
 
                 if (correos.Count > 0)
                 {
+                    log.InfoFormat("Se inicia el envío de correos, cantidad: {0}.", correos.Count());
                     Task[] taskArray = new Task[correos.Count];
 
                     int i = 0;
@@ -65,6 +70,11 @@ namespace FactElec.LogicaProceso
                         i += 1;
                     }
                     Task.WaitAll(taskArray.ToArray());
+                    log.InfoFormat("Se ha terminado el envío de los correos, cantidad: {0}.", correos.Count());
+                }
+                else
+                {
+                    log.Info("No hay correos pendientes de enviar.");
                 }
             }
             catch (Exception ex)

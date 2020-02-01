@@ -129,6 +129,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -138,7 +139,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connected Services\wsSUNAT\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="Lp_Comprobante.cs" />
+    <Compile Include="Lp_CreditNote.cs" />
     <Compile Include="Lp_DebitNote.cs" />
     <Compile Include="Lp_EnvioComprobante.cs" />
     <Compile Include="Lp_EnvioCorreo.cs" />
@@ -147,7 +154,6 @@
     <Compile Include="Lp_SincronizarComprobante.cs" />
     <Compile Include="Lp_Utilitario.cs" />
     <Compile Include="Lp_Validacion.cs" />
-    <Compile Include="Lp_CreditNote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistroComprobante\Lp_Metodo_DebitNote.cs" />
     <Compile Include="RegistroComprobante\Lp_Metodo_Invoice.cs" />
@@ -168,10 +174,46 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Connected Services\wsSUNAT\billService.wsdl" />
+    <None Include="Connected Services\wsSUNAT\billService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\wsSUNAT\billService1.wsdl" />
+    <None Include="Connected Services\wsSUNAT\FactElec.LogicaProceso.wsSUNAT.getStatusResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\wsSUNAT\FactElec.LogicaProceso.wsSUNAT.sendBillResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\wsSUNAT\FactElec.LogicaProceso.wsSUNAT.sendPackResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\wsSUNAT\FactElec.LogicaProceso.wsSUNAT.sendSummaryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\wsSUNAT\FactElec.LogicaProceso.wsSUNAT.statusResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\wsSUNAT\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\wsSUNAT\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\wsSUNAT\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\wsSUNAT\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

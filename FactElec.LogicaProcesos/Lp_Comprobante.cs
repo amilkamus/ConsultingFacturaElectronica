@@ -26,5 +26,10 @@ namespace FactElec.LogicaProceso
             Da_Comprobante daComprobante = new Da_Comprobante();
             return daComprobante.InsertarProgramacion(ref mensajeRetorno);
         }
+        public bool QuitarProgramacion(ref string mensajeRetorno)
+        {
+            Da_Comprobante daComprobante = new Da_Comprobante();
+            return daComprobante.QuitarProgramacion(ref mensajeRetorno);
+        }
     }
 }

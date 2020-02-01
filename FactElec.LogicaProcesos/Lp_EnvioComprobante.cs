@@ -25,6 +25,7 @@ namespace FactElec.LogicaProceso
 
                 if (comprobantes.Count > 0)
                 {
+                    log.InfoFormat("Se inicia el envío de comprobantes, cantidad: {0}.", comprobantes.Count());
                     Task[] taskArray = new Task[comprobantes.Count];
 
                     int i = 0;
@@ -35,6 +36,11 @@ namespace FactElec.LogicaProceso
                         i += 1;
                     }
                     Task.WaitAll(taskArray.ToArray());
+                    log.InfoFormat("Se ha terminado el envío de los comprobantes, cantidad: {0}.", comprobantes.Count());
+                }
+                else
+                {
+                    log.Info("No hay comprobantes pendientes de envío.");
                 }
             }
             catch (Exception ex)
@@ -66,7 +72,7 @@ namespace FactElec.LogicaProceso
             EliminarCarpeta(rutaCarpetaXML);
 
             ServicePointManager.ServerCertificateValidationCallback = (snder, cert, chain, error) => true;
-/*
+
             byte[] archivoZip = File.ReadAllBytes(rutaArchivoZIP);
             wsSUNAT.sendBillRequest sendBill = new wsSUNAT.sendBillRequest();
             wsSUNAT.billServiceClient billService = new wsSUNAT.billServiceClient();
@@ -94,7 +100,16 @@ namespace FactElec.LogicaProceso
                 log.Error(string.Format("El comprobante {0}-{1} de la empresa emisora con ruc: {2} obtuvo el código de error \"{3}\" con mensaje \"{4}\". {5}",
                     comprobante.TipoComprobante, comprobante.SerieNumero, comprobante.RucEmisor, codigo, mensaje, mensajeReintento));
             }
-            */
+            catch(Exception ex)
+            {
+                if (billService.State == CommunicationState.Opened)
+                {
+                    billService.Close();
+                }
+                log.Error(string.Format("El comprobante {0}-{1} de la empresa emisora con ruc: {2} obtuvo el error \"{3}\"",
+                    comprobante.TipoComprobante, comprobante.SerieNumero, comprobante.RucEmisor, ex.Message.ToString()));
+            }
+            
             EliminarArchivo(rutaZipResponse);
             EliminarArchivo(rutaArchivoZIP);
         }

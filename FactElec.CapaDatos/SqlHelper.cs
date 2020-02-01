@@ -12,7 +12,7 @@ namespace FactElec.CapaDatos
 
         #region " - GetConnection - "
 
-        static string cadenaSql = ConfigurationManager.ConnectionStrings["conexSql"].ConnectionString;
+        static string cadenaSql = ConfigurationManager.ConnectionStrings["cnx"].ConnectionString;
         public static string GetConnectionString()
         {
             //EntidadLog oENConfigXml = ad_Comun.CargarConfiguracion();

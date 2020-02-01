@@ -16,8 +16,6 @@ namespace FactElec.WebApi.Controllers
         public ComprobanteController() => log = log4net.LogManager.GetLogger(typeof(ComprobanteController));
 
         // GET: api/Comprobantes
-
-
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };

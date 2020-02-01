@@ -21,6 +21,7 @@ namespace FactElec.LogicaProceso
 
                 if (listaComprobante.Count > 0)
                 {
+                    log.InfoFormat("Se inicia la generación de PDFs, cantidad: {0}.", listaComprobante.Count());
                     Task[] taskArray = new Task[listaComprobante.Count];
 
                     int i = 0;
@@ -31,6 +32,11 @@ namespace FactElec.LogicaProceso
                         i += 1;
                     }
                     Task.WaitAll(taskArray.ToArray());
+                    log.InfoFormat("Se ha terminado la generación de PDFs, cantidad: {0}.", listaComprobante.Count());
+                }
+                else
+                {
+                    log.Info("No hay PDFs pendientes de generación.");
                 }
             }
             catch (Exception ex)

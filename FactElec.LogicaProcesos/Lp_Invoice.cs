@@ -275,7 +275,7 @@ namespace FactElec.LogicaProceso
 
             ReportDocument rpt = new ReportDocument();
             try
-            {
+            {                
                 string rutaReporte = System.AppDomain.CurrentDomain.BaseDirectory.ToString() + @"CrpInvoice.rpt";               
                 log.Info(rutaReporte);
                 rpt.Load(rutaReporte);
