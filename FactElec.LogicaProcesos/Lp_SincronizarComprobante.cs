@@ -29,18 +29,20 @@ namespace FactElec.LogicaProceso
             if (listaRespuesta.Count > 0)
             {
                 log.InfoFormat("Se inicia la sincronización de CDRs, cantidad: {0}.", listaRespuesta.Count);
-                Task[] taskArray = new Task[listaRespuesta.Count];
 
-                int index = 0;
-                foreach (En_Archivo archivo in listaRespuesta)
+                Task task = Task.Factory.StartNew(() =>
                 {
-                    if (archivo != null)
+                    foreach (En_Archivo archivo in listaRespuesta)
                     {
-                        taskArray[index] = Task.Factory.StartNew(() => ExtraerCDR(archivo.IdComprobante, archivo.Archivo));
-                        index += 1;
+                        if (archivo != null)
+                        {
+                            ExtraerCDR(archivo.IdComprobante, archivo.Archivo);
+                        }
                     }
-                }
-                Task.WaitAll(taskArray.ToArray());
+                });
+
+                task.Wait();
+
                 log.InfoFormat("Se ha terminado la sincronización de CDRs, cantidad: {0}.", listaRespuesta.Count);
             }
             else

@@ -22,16 +22,18 @@ namespace FactElec.LogicaProceso
                 if (listaComprobante.Count > 0)
                 {
                     log.InfoFormat("Se inicia la generación de PDFs, cantidad: {0}.", listaComprobante.Count());
-                    Task[] taskArray = new Task[listaComprobante.Count];
 
-                    int i = 0;
-                    foreach (En_Archivo comprobante in listaComprobante)
+                    Task task = Task.Factory.StartNew(() =>
                     {
-                        En_Archivo comprobanteParam = comprobante;
-                        taskArray[i] = Task.Factory.StartNew(() => GenerarPdf(comprobanteParam));
-                        i += 1;
-                    }
-                    Task.WaitAll(taskArray.ToArray());
+                        foreach (En_Archivo comprobante in listaComprobante)
+                        {
+                            En_Archivo comprobanteParam = comprobante;
+                            GenerarPdf(comprobanteParam);
+                        }
+                    });
+
+                    task.Wait();
+
                     log.InfoFormat("Se ha terminado la generación de PDFs, cantidad: {0}.", listaComprobante.Count());
                 }
                 else

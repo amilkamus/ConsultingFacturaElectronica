@@ -24,16 +24,18 @@ namespace FactElec.LogicaProceso
                 if (comprobantes.Count > 0)
                 {
                     log.InfoFormat("Se inicia el registro de correos, cantidad: {0}.", comprobantes.Count());
-                    Task[] taskArray = new Task[comprobantes.Count];
 
-                    int i = 0;
-                    foreach (En_Comprobante comprobante in comprobantes)
+                    Task task = Task.Factory.StartNew(() =>
                     {
-                        En_Comprobante comprobanteParam = comprobante;
-                        taskArray[i] = Task.Factory.StartNew(() => RegistrarCorreo(comprobanteParam));
-                        i += 1;
-                    }
-                    Task.WaitAll(taskArray.ToArray());
+                        foreach (En_Comprobante comprobante in comprobantes)
+                        {
+                            En_Comprobante comprobanteParam = comprobante;
+                            RegistrarCorreo(comprobanteParam);
+                        }
+                    });
+
+                    task.Wait();
+
                     log.InfoFormat("Se ha terminado el registro de los correos, cantidad: {0}.", comprobantes.Count());
                 }
                 else
@@ -60,16 +62,18 @@ namespace FactElec.LogicaProceso
                 if (correos.Count > 0)
                 {
                     log.InfoFormat("Se inicia el envío de correos, cantidad: {0}.", correos.Count());
-                    Task[] taskArray = new Task[correos.Count];
 
-                    int i = 0;
-                    foreach (En_Correo correo in correos)
+                    Task task = Task.Factory.StartNew(() =>
                     {
-                        En_Correo correoParam = correo;
-                        taskArray[i] = Task.Factory.StartNew(() => EnviarCorreo(carpetaTemporal, correoParam));
-                        i += 1;
-                    }
-                    Task.WaitAll(taskArray.ToArray());
+                        foreach (En_Correo correo in correos)
+                        {
+                            En_Correo correoParam = correo;
+                            EnviarCorreo(carpetaTemporal, correoParam);
+                        }
+                    });
+
+                    task.Wait();
+
                     log.InfoFormat("Se ha terminado el envío de los correos, cantidad: {0}.", correos.Count());
                 }
                 else

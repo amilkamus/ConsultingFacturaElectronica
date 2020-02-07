@@ -26,16 +26,18 @@ namespace FactElec.LogicaProceso
                 if (comprobantes.Count > 0)
                 {
                     log.InfoFormat("Se inicia el envío de comprobantes, cantidad: {0}.", comprobantes.Count());
-                    Task[] taskArray = new Task[comprobantes.Count];
 
-                    int i = 0;
-                    foreach (En_Comprobante comprobante in comprobantes)
+                    Task task = Task.Factory.StartNew(() =>
                     {
-                        En_Comprobante comprobanteParam = comprobante;
-                        taskArray[i] = Task.Factory.StartNew(() => EnviarComprobante(comprobanteParam));
-                        i += 1;
-                    }
-                    Task.WaitAll(taskArray.ToArray());
+                        foreach (En_Comprobante comprobante in comprobantes)
+                        {
+                            En_Comprobante comprobanteParam = comprobante;
+                            EnviarComprobante(comprobanteParam);
+                        }
+                    });
+
+                    task.Wait();
+
                     log.InfoFormat("Se ha terminado el envío de los comprobantes, cantidad: {0}.", comprobantes.Count());
                 }
                 else
@@ -100,7 +102,7 @@ namespace FactElec.LogicaProceso
                 log.Error(string.Format("El comprobante {0}-{1} de la empresa emisora con ruc: {2} obtuvo el código de error \"{3}\" con mensaje \"{4}\". {5}",
                     comprobante.TipoComprobante, comprobante.SerieNumero, comprobante.RucEmisor, codigo, mensaje, mensajeReintento));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (billService.State == CommunicationState.Opened)
                 {
@@ -109,7 +111,7 @@ namespace FactElec.LogicaProceso
                 log.Error(string.Format("El comprobante {0}-{1} de la empresa emisora con ruc: {2} obtuvo el error \"{3}\"",
                     comprobante.TipoComprobante, comprobante.SerieNumero, comprobante.RucEmisor, ex.Message.ToString()));
             }
-            
+
             EliminarArchivo(rutaZipResponse);
             EliminarArchivo(rutaArchivoZIP);
         }
