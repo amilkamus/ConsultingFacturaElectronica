@@ -1,7 +1,9 @@
-﻿using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
+﻿using FactElec.CapaEntidad.ListarComprobanteElectronicos;
+using FactElec.CapaEntidad.ObtenerArchivo;
 using FactElec.CapaEntidad.RegistroComprobante;
 using FactElec.LogicaProceso;
 using FactElec.LogicaProceso.RegistroComprobante;
+using System.Collections.Generic;
 
 [assembly: FactElec.Log.Configuracion("WCFService")]
 namespace FactElec.WebService
@@ -11,43 +13,118 @@ namespace FactElec.WebService
         readonly log4net.ILog log = null;
         public Service1() => log = log4net.LogManager.GetLogger(typeof(Service1));
 
-        public En_SalidaObtenerRI ObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada)
+        public En_SalidaArchivo ObtenerDocumentoComprobante(long idComprobante)
         {
             log.Info("Inicio del proceso.");
             string mensajeRetorno = "";
-            En_SalidaObtenerRI salida;
+            En_SalidaArchivo salida = new Lp_Comprobante().ObtenerDocumentoComprobante(idComprobante, ref mensajeRetorno);
 
-            bool esValido = true;
-            salida = Lp_Validacion.ValidarObtenerRepresentacionImpresa(entrada, ref esValido);
-
-            if (esValido)
+            if (salida != null)
             {
-                salida = new Lp_Comprobante().ObtenerRepresentacionImpresa(entrada, ref mensajeRetorno);
+                salida.Codigo = "0";
+                salida.Descripcion = "Se realizó el proceso correctamente.";
+            }
+            else
+            {
+                salida = new En_SalidaArchivo();
+                salida.Codigo = "1";
 
-                if (salida != null)
+                if (string.IsNullOrEmpty(mensajeRetorno))
                 {
-                    salida.Codigo = "0";
-                    salida.Descripcion = "Se realizó el proceso correctamente.";
+                    salida.Descripcion = "No se encontró el documento XML en la base de datos";
+                    log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(mensajeRetorno))
-                    {
-                        salida = new En_SalidaObtenerRI();
-                        salida.Codigo = "6";
-                        salida.Descripcion = "No se encontró el comprobante en la base de datos";
-                        log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
-                    }
-                    else
-                    {
-                        salida.Codigo = "7";
-                        salida.Descripcion = mensajeRetorno;
-                        log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
-                    }
+                    salida.Descripcion = mensajeRetorno;
+                    log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
                 }
             }
+
             log.Info("Fin del proceso.");
             return salida;
+        }
+
+        public En_SalidaArchivo ObtenerRepresentacionImpresa(long idComprobante)
+        {
+            log.Info("Inicio del proceso.");
+            string mensajeRetorno = "";
+            En_SalidaArchivo salida = new Lp_Comprobante().ObtenerRepresentacionImpresa(idComprobante, ref mensajeRetorno);
+
+            if (salida != null)
+            {
+                salida.Codigo = "0";
+                salida.Descripcion = "Se realizó el proceso correctamente.";
+            }
+            else
+            {
+                salida = new En_SalidaArchivo();
+                salida.Codigo = "1";
+
+                if (string.IsNullOrEmpty(mensajeRetorno))
+                {
+                    salida.Descripcion = "No se encontró la representación impresa en la base de datos";
+                    log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
+                }
+                else
+                {
+                    salida.Descripcion = mensajeRetorno;
+                    log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
+                }
+            }
+
+            log.Info("Fin del proceso.");
+            return salida;
+        }
+
+        public En_SalidaArchivo ObtenerRespuestaComprobante(long idComprobante)
+        {
+            log.Info("Inicio del proceso.");
+            string mensajeRetorno = "";
+            En_SalidaArchivo salida = new Lp_Comprobante().ObtenerRespuestaComprobante(idComprobante, ref mensajeRetorno);
+
+            if (salida != null)
+            {
+                salida.Codigo = "0";
+                salida.Descripcion = "Se realizó el proceso correctamente.";
+            }
+            else
+            {
+                salida = new En_SalidaArchivo();
+                salida.Codigo = "1";
+
+                if (string.IsNullOrEmpty(mensajeRetorno))
+                {
+                    salida.Descripcion = "No se encontró la respuesta en la base de datos";
+                    log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
+                }
+                else
+                {
+                    salida.Descripcion = mensajeRetorno;
+                    log.Error(string.Format("{0} - {1}", salida.Codigo, salida.Descripcion));
+                }
+            }
+
+            log.Info("Fin del proceso.");
+            return salida;
+        }
+
+        public List<En_SalidaListarComprobante> ListarComprobanteElectronicos(En_EntradaListarComprobante entrada)
+        {
+            log.Info("Inicio del proceso.");
+            List<En_SalidaListarComprobante> comprobantes = new Lp_Comprobante().ListarComprobanteElectronicos(entrada);
+
+            if (comprobantes == null || comprobantes.Count == 0)
+            {
+                log.ErrorFormat("No se encontró ningún comprobante para la empresa: {1}.", comprobantes.Count, entrada.NumeroDocumentoIdentidadEmisor);
+            }
+            else
+            {
+                log.InfoFormat("Se encontraron {0} comprobantes para la empresa: {1}.", comprobantes.Count, entrada.NumeroDocumentoIdentidadEmisor);
+            }
+
+            log.Info("Fin del proceso.");
+            return comprobantes;
         }
 
         public En_Respuesta RegistroComprobante(En_ComprobanteElectronico Comprobante)

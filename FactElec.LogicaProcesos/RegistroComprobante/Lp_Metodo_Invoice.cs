@@ -588,63 +588,74 @@ namespace FactElec.LogicaProceso.RegistroComprobante
             EmisorListaIdentificacion.Add(EmisorIdentificacion);
 
             //Razon social
-            PartyLegalEntityType oRazonSocial = new PartyLegalEntityType
+            PartyLegalEntityType oRazonSocial = new PartyLegalEntityType();
+
+            if (!string.IsNullOrEmpty(Emisor.RazonSocial) || !string.IsNullOrWhiteSpace(Emisor.RazonSocial))
             {
-                RegistrationName = new RegistrationNameType
-                {
-                    Value = Emisor.RazonSocial,
-                },
+                oRazonSocial.RegistrationName = new RegistrationNameType();
+                oRazonSocial.RegistrationName.Value = Emisor.RazonSocial;
+            }
 
-                RegistrationAddress = new AddressType
-                {
-                    ID = new IDType
-                    {
-                        Value = Emisor.CodigoUbigeo.Trim(),
-                        schemeAgencyName = "PE:INEI",
-                        schemeName = "Ubigeos"
-                    },
-                    AddressTypeCode = new AddressTypeCodeType
-                    {
-                        Value = Emisor.CodigoDomicilioFiscal.Trim(),
-                        listAgencyName = "PE:SUNAT",
-                        listName = "Establecimientos anexos"
-                    },
-                    CitySubdivisionName = new CitySubdivisionNameType
-                    {
-                        Value = Emisor.Urbanizacion.Trim()
-                    },
-                    CityName = new CityNameType
-                    {
-                        Value = Emisor.Provincia.Trim()
-                    },
-                    CountrySubentity = new CountrySubentityType
-                    {
-                        Value = Emisor.Departamento.Trim()
-                    },
-                    District = new DistrictType
-                    {
-                        Value = Emisor.Distrito.Trim()
-                    },
-                    AddressLine = new AddressLineType[] {
-                        new AddressLineType {
-                            Line =new LineType{
-                                Value =Emisor.Direccion.Trim()
-                            }
-                        }
-                    },
-                    Country = new CountryType
-                    {
-                        IdentificationCode = new IdentificationCodeType
-                        {
-                            listAgencyName = "United Nations Economic Commission for Europe",
-                            listID = "ISO 3166-1",
-                            listName = "Country",
-                            Value = Emisor.CodigoPais.Trim()
-                        }
-                    }
+            oRazonSocial.RegistrationAddress = new AddressType();
 
-                }
-            };
+
+            if (!string.IsNullOrEmpty(Emisor.CodigoUbigeo) && !string.IsNullOrWhiteSpace(Emisor.CodigoUbigeo))
+            {
+                oRazonSocial.RegistrationAddress.ID = new IDType();
+                oRazonSocial.RegistrationAddress.ID.Value = Emisor.CodigoUbigeo;
+                oRazonSocial.RegistrationAddress.ID.schemeAgencyName = "PE:INEI";
+                oRazonSocial.RegistrationAddress.ID.schemeName = "Ubigeos";
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.CodigoDomicilioFiscal) || !string.IsNullOrWhiteSpace(Emisor.CodigoDomicilioFiscal))
+            {
+                oRazonSocial.RegistrationAddress.AddressTypeCode = new AddressTypeCodeType();
+                oRazonSocial.RegistrationAddress.AddressTypeCode.Value = Emisor.CodigoDomicilioFiscal;
+                oRazonSocial.RegistrationAddress.AddressTypeCode.listAgencyName = "PE:SUNAT";
+                oRazonSocial.RegistrationAddress.AddressTypeCode.listName = "Establecimientos anexos";
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.Urbanizacion) || !string.IsNullOrWhiteSpace(Emisor.Urbanizacion))
+            {
+                oRazonSocial.RegistrationAddress.CitySubdivisionName = new CitySubdivisionNameType();
+                oRazonSocial.RegistrationAddress.CitySubdivisionName.Value = Emisor.Urbanizacion;
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.Provincia) || !string.IsNullOrWhiteSpace(Emisor.Provincia))
+            {
+                oRazonSocial.RegistrationAddress.CityName = new CityNameType();
+                oRazonSocial.RegistrationAddress.CityName.Value = Emisor.Provincia;
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.Departamento) || !string.IsNullOrWhiteSpace(Emisor.Departamento))
+            {
+                oRazonSocial.RegistrationAddress.CountrySubentity = new CountrySubentityType();
+                oRazonSocial.RegistrationAddress.CountrySubentity.Value = Emisor.Departamento;
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.Distrito) || !string.IsNullOrWhiteSpace(Emisor.Distrito))
+            {
+                oRazonSocial.RegistrationAddress.District = new DistrictType();
+                oRazonSocial.RegistrationAddress.District.Value = Emisor.Distrito;
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.Direccion) || !string.IsNullOrWhiteSpace(Emisor.Direccion))
+            {
+                oRazonSocial.RegistrationAddress.AddressLine = new AddressLineType[1];
+                oRazonSocial.RegistrationAddress.AddressLine[0] = new AddressLineType();
+                oRazonSocial.RegistrationAddress.AddressLine[0].Line = new LineType();
+                oRazonSocial.RegistrationAddress.AddressLine[0].Line.Value = Emisor.Direccion;
+            }
+
+            if (!string.IsNullOrEmpty(Emisor.CodigoPais) || !string.IsNullOrWhiteSpace(Emisor.CodigoPais))
+            {
+                oRazonSocial.RegistrationAddress.Country = new CountryType();
+                oRazonSocial.RegistrationAddress.Country.IdentificationCode = new IdentificationCodeType();
+                oRazonSocial.RegistrationAddress.Country.IdentificationCode.listAgencyName = "United Nations Economic Commission for Europe";
+                oRazonSocial.RegistrationAddress.Country.IdentificationCode.listID = "ISO 3166-1";
+                oRazonSocial.RegistrationAddress.Country.IdentificationCode.listName = "Country";
+                oRazonSocial.RegistrationAddress.Country.IdentificationCode.Value = Emisor.CodigoPais;
+            }
 
             ContactType oContacto = new ContactType
             {

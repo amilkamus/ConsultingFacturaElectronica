@@ -1,0 +1,1 @@
+INSERT INTO CO_TipoComprobante VALUES ('NOTA DE CREDITO', 'Nota de crédito', 'ACTIVO')

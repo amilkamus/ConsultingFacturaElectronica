@@ -62,28 +62,27 @@ namespace FactElec.LogicaProceso
 
             try
             {
-                string rutaTemporal = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temporal"); // RutaTemporalCdr("TempCDR");
-
-                //if (!Directory.Exists(rutaTemporal)) Directory.CreateDirectory(rutaTemporal);
-
+                string rutaTemporal = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temporal");
                 File.WriteAllBytes(rutaTemporal + @"\" + nombreArchivoRespuesta, archivoRespuesta);
-
-                string nombreArchivoDescomprimido = oUtilitario.Descomprimir(rutaTemporal, nombreArchivoRespuesta);
-                oRespuesta = oUtilitario.LeerRespuestaXml(nombreArchivoDescomprimido);
+                bool esExcepcion = false;
+                string nombreArchivoDescomprimido = oUtilitario.Descomprimir(rutaTemporal, nombreArchivoRespuesta, ref esExcepcion);
+                oRespuesta = oUtilitario.LeerRespuestaXml(nombreArchivoDescomprimido, esExcepcion);
                 oRespuesta.Idcomprobante = Idcomprobante;
                 oRespuesta.Archivo = archivoRespuesta;
                 //guardar en base de datos
                 Da_Comprobante oDatos = new Da_Comprobante();
                 oDatos.RegistrarRespuestaSunat(oRespuesta);
-                string archivoEliminar = rutaTemporal + @"\" + nombreArchivoDescomprimido;
-                if (File.Exists(archivoEliminar))
-                {
-                    File.Delete(archivoEliminar);
-                }
+                //string archivoEliminar = rutaTemporal + @"\" + nombreArchivoDescomprimido;
+                if (File.Exists(nombreArchivoDescomprimido))
+                    File.Delete(nombreArchivoDescomprimido);
+
+                if (File.Exists(nombreArchivoRespuesta))
+                    File.Delete(nombreArchivoRespuesta);
+                //File.Delete(rutaTemporal + @"\" + nombreArchivoRespuesta);
             }
-            catch // (Exception ex)
+            catch (Exception ex)
             {
-                //throw ex.Message;
+                log.Error(ex.Message.ToString());
             }
             return true;
         }

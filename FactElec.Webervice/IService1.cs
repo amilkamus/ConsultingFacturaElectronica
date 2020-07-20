@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
 using System.ServiceModel;
-using System.ServiceModel.Web;
-using System.Text;
-using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
+using FactElec.CapaEntidad.ListarComprobanteElectronicos;
+using FactElec.CapaEntidad.ObtenerArchivo;
 using FactElec.CapaEntidad.RegistroComprobante;
 
 namespace FactElec.WebService
@@ -17,9 +13,18 @@ namespace FactElec.WebService
 
         [OperationContract]
         En_Respuesta RegistroComprobante(En_ComprobanteElectronico Comprobante);
-        [OperationContract]
-        En_SalidaObtenerRI ObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada);
 
+        [OperationContract]
+        En_SalidaArchivo ObtenerRepresentacionImpresa(long idComprobante);
+        
+        [OperationContract]
+        En_SalidaArchivo ObtenerDocumentoComprobante(long idComprobante);
+        
+        [OperationContract]
+        En_SalidaArchivo ObtenerRespuestaComprobante(long idComprobante);
+
+        [OperationContract]
+        List<En_SalidaListarComprobante> ListarComprobanteElectronicos(En_EntradaListarComprobante entrada);
     }
 
 }

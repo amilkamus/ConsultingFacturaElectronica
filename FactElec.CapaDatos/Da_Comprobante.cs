@@ -1,6 +1,7 @@
 ﻿using FactElec.CapaEntidad.EnvioComprobante;
-using FactElec.CapaEntidad.ObtenerRepresentacionImpresa;
+using FactElec.CapaEntidad.ObtenerArchivo;
 using FactElec.CapaEntidad.RegistroComprobante;
+using FactElec.CapaEntidad.ListarComprobanteElectronicos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,30 +17,28 @@ namespace FactElec.CapaDatos
         readonly string connectionString = ConfigurationManager.ConnectionStrings["cnx"].ConnectionString;
         readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Da_Comprobante));
 
-        public En_SalidaObtenerRI ObtenerRepresentacionImpresa(En_EntradaObtenerRI entrada, ref string mensajeRetorno)
+        public En_SalidaArchivo ObtenerRepresentacionImpresa(long idComprobante, ref string mensajeRetorno)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmd = new SqlCommand("dbo.usp_ObtenerRepresentacionImpresa", cn)
             {
                 CommandType = CommandType.StoredProcedure
             };
-            cmd.Parameters.Add(new SqlParameter { ParameterName = "@NumeroDocumento", SqlDbType = SqlDbType.VarChar, Size = 20, Value = entrada.NumeroDocumento });
-            cmd.Parameters.Add(new SqlParameter { ParameterName = "@SerieNumero", SqlDbType = SqlDbType.VarChar, Size = 20, Value = string.Format("{0}-{1}", entrada.Serie, entrada.Numero) });
-            cmd.Parameters.Add(new SqlParameter { ParameterName = "@TipoComprobante", SqlDbType = SqlDbType.VarChar, Size = 10, Value = entrada.TipoComprobante });
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@idComprobante", SqlDbType = SqlDbType.BigInt, Value = idComprobante });
 
             try
             {
-                En_SalidaObtenerRI salida = null;
+                En_SalidaArchivo salida = null;
 
                 cn.Open();
                 SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
                 if (dr.Read())
                 {
-                    salida = new En_SalidaObtenerRI
+                    salida = new En_SalidaArchivo
                     {
-                        NombreArchivo = (dr.IsDBNull(dr.GetOrdinal("NombrePDF"))) ? "" : dr.GetString(dr.GetOrdinal("NombrePDF")),
-                        ContenidoArchivo = (dr.IsDBNull(dr.GetOrdinal("ArchivoPDF"))) ? null : (byte[])dr[dr.GetOrdinal("ArchivoPDF")]
+                        NombreArchivo = (dr.IsDBNull(dr.GetOrdinal("NombreRepresentacionImpresa"))) ? "" : dr.GetString(dr.GetOrdinal("NombreRepresentacionImpresa")),
+                        ContenidoArchivo = (dr.IsDBNull(dr.GetOrdinal("Archivo"))) ? "" : Convert.ToBase64String((byte[])dr[dr.GetOrdinal("Archivo")])
                     };
                 }
 
@@ -51,13 +50,106 @@ namespace FactElec.CapaDatos
             catch (SqlException ex)
             {
                 if (cn.State == ConnectionState.Open) { cn.Close(); }
-                mensajeRetorno = ex.Message.ToString();
+                mensajeRetorno = "Ocurrió un error al obtener la representación impresa del comprobante, revisar el log.";
+                log.Error(mensajeRetorno, ex);
                 return null;
             }
             catch (Exception ex)
             {
                 if (cn.State == ConnectionState.Open) { cn.Close(); }
                 mensajeRetorno = "Ocurrió un error al obtener la representación impresa del comprobante, revisar el log.";
+                log.Error(mensajeRetorno, ex);
+                return null;
+            }
+        }
+
+        public En_SalidaArchivo ObtenerDocumentoComprobante(long idComprobante, ref string mensajeRetorno)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_ObtenerDocumentoComprobante", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@idComprobante", SqlDbType = SqlDbType.BigInt, Value = idComprobante });
+
+            try
+            {
+                En_SalidaArchivo salida = null;
+
+                cn.Open();
+                SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+                if (dr.Read())
+                {
+                    salida = new En_SalidaArchivo
+                    {
+                        NombreArchivo = (dr.IsDBNull(dr.GetOrdinal("NombreXML"))) ? "" : dr.GetString(dr.GetOrdinal("NombreXML")),
+                        ContenidoArchivo = (dr.IsDBNull(dr.GetOrdinal("ArchivoXML"))) ? "" : Convert.ToBase64String((byte[])dr[dr.GetOrdinal("ArchivoXML")])
+                    };
+                }
+
+                cn.Close();
+
+                mensajeRetorno = "";
+                return salida;
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = "Ocurrió un error al obtener el documento XML del comprobante, revisar el log.";
+                log.Error(mensajeRetorno, ex);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = "Ocurrió un error al obtener el documento XML del comprobante, revisar el log.";
+                log.Error(mensajeRetorno, ex);
+                return null;
+            }
+        }
+
+        public En_SalidaArchivo ObtenerRespuestaComprobante(long idComprobante, ref string mensajeRetorno)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand("dbo.usp_ObtenerRespuestaComprobante", cn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.Add(new SqlParameter { ParameterName = "@idComprobante", SqlDbType = SqlDbType.BigInt, Value = idComprobante });
+
+            try
+            {
+                En_SalidaArchivo salida = null;
+
+                cn.Open();
+                SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+                if (dr.Read())
+                {
+                    salida = new En_SalidaArchivo
+                    {
+                        NombreArchivo = (dr.IsDBNull(dr.GetOrdinal("NombreRespuesta"))) ? "" : dr.GetString(dr.GetOrdinal("NombreRespuesta")),
+                        ContenidoArchivo = (dr.IsDBNull(dr.GetOrdinal("Archivo"))) ? "" : Convert.ToBase64String((byte[])dr[dr.GetOrdinal("Archivo")])
+                    };
+                }
+
+                cn.Close();
+
+                mensajeRetorno = "";
+                return salida;
+            }
+            catch (SqlException ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = "Ocurrió un error al obtener la respuesta del comprobante, revisar el log.";
+                log.Error(mensajeRetorno, ex);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                if (cn.State == ConnectionState.Open) { cn.Close(); }
+                mensajeRetorno = "Ocurrió un error al obtener la respuesta XML del comprobante, revisar el log.";
                 log.Error(mensajeRetorno, ex);
                 return null;
             }
@@ -100,8 +192,8 @@ namespace FactElec.CapaDatos
                         PaginaWeb = (dr.IsDBNull(dr.GetOrdinal("PaginaWeb"))) ? "" : dr.GetString(dr.GetOrdinal("PaginaWeb")),
                         Provincia = (dr.IsDBNull(dr.GetOrdinal("Provincia"))) ? "" : dr.GetString(dr.GetOrdinal("Provincia")),
                         RazonSocial = (dr.IsDBNull(dr.GetOrdinal("RazonSocial"))) ? "" : dr.GetString(dr.GetOrdinal("RazonSocial")),
-                        TipoDocumentoIdentidad = (dr.IsDBNull(dr.GetOrdinal("TipoDocumentoIdentidad"))) ? "" : dr.GetString(dr.GetOrdinal("TipoDocumentoIdentidad")),
-                        Urbanizacion = (dr.IsDBNull(dr.GetOrdinal("Urbanizacion"))) ? "" : dr.GetString(dr.GetOrdinal("Urbanizacion")),
+                        TipoDocumentoIdentidad = (dr.IsDBNull(dr.GetOrdinal("TipoDocumentoIdentidad"))) ? "" : dr.GetString(dr.GetOrdinal("TipoDocumentoIdentidad"))
+                        //Urbanizacion = (dr.IsDBNull(dr.GetOrdinal("Urbanizacion"))) ? "" : dr.GetString(dr.GetOrdinal("Urbanizacion")),
                     };
                 }
 
@@ -288,7 +380,6 @@ namespace FactElec.CapaDatos
             }
         }
 
-
         public void InsertarCdrPendiente(long idComprobante, byte[] archivo)
         {
             SqlConnection cn = new SqlConnection(connectionString);
@@ -435,19 +526,20 @@ namespace FactElec.CapaDatos
         public int RegistrarRespuestaSunat(FactElec.CapaEntidad.SincronizarComprobante.En_Respuesta oRespuesta)
         {
             int respuesta = 0;
-            List<SqlParameter> parameters = new List<SqlParameter>();
-            parameters.Add(new SqlParameter { ParameterName = "@CodigoSUNAT", SqlDbType = SqlDbType.VarChar, Size = 50, Value = oRespuesta.Codigo });
-            parameters.Add(new SqlParameter { ParameterName = "@IdComprobante", SqlDbType = SqlDbType.BigInt, Value = oRespuesta.Idcomprobante });
-            parameters.Add(new SqlParameter { ParameterName = "@Archivo", SqlDbType = SqlDbType.VarBinary, Value = oRespuesta.Archivo });
-            parameters.Add(new SqlParameter { ParameterName = "@Descripcion", SqlDbType = SqlDbType.VarChar, Value = oRespuesta.Descripcion });
-            parameters.Add(new SqlParameter { ParameterName = "@FechaSunat", SqlDbType = SqlDbType.VarChar, Size = 20, Value = oRespuesta.FecharespuestaSunat });
-            parameters.Add(new SqlParameter { ParameterName = "@HoraSunat", SqlDbType = SqlDbType.VarChar, Size = 20, Value = oRespuesta.HoraRespuestaSunat });
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter { ParameterName = "@CodigoSUNAT", SqlDbType = SqlDbType.VarChar, Size = 50, Value = oRespuesta.Codigo },
+                new SqlParameter { ParameterName = "@IdComprobante", SqlDbType = SqlDbType.BigInt, Value = oRespuesta.Idcomprobante },
+                new SqlParameter { ParameterName = "@Archivo", SqlDbType = SqlDbType.VarBinary, Value = oRespuesta.Archivo },
+                new SqlParameter { ParameterName = "@Descripcion", SqlDbType = SqlDbType.VarChar, Value = oRespuesta.Descripcion },
+                new SqlParameter { ParameterName = "@FechaSunat", SqlDbType = SqlDbType.VarChar, Size = 20, Value = oRespuesta.FecharespuestaSunat },
+                new SqlParameter { ParameterName = "@HoraSunat", SqlDbType = SqlDbType.VarChar, Size = 20, Value = oRespuesta.HoraRespuestaSunat }
+            };
 
             try
             {
                 respuesta = SqlHelper.ExecuteNonQuery("usp_RegistraRespuestaSUNAT", parameters);
                 return respuesta;
-
             }
             catch (Exception ex)
             {
@@ -455,5 +547,31 @@ namespace FactElec.CapaDatos
             }
         }
 
+        public List<En_SalidaListarComprobante> ListarComprobanteElectronicos(En_EntradaListarComprobante entrada)
+        {
+            List<En_SalidaListarComprobante> comprobantes = null;
+
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter { ParameterName = "@estado", SqlDbType = SqlDbType.Int, Value = entrada.Estado },
+                new SqlParameter { ParameterName = "@nroDocumentoEmisor", SqlDbType = SqlDbType.VarChar, Size = 30, Value = entrada.NumeroDocumentoIdentidadEmisor },
+                new SqlParameter { ParameterName = "@nroDocumentoReceptor", SqlDbType = SqlDbType.VarChar, Size = 30, Value = (entrada.NumeroDocumentoIdentidadReceptor)??"" },
+                new SqlParameter { ParameterName = "@fechaInicial", SqlDbType = SqlDbType.VarChar, Size = 10, Value = entrada.FechaInicial },
+                new SqlParameter { ParameterName = "@fechaFinal", SqlDbType = SqlDbType.VarChar, Size = 10, Value = entrada.FechaFinal },
+                new SqlParameter { ParameterName = "@tipoComprobante", SqlDbType = SqlDbType.VarChar, Size = 10, Value = entrada.TipoComprobante },
+                new SqlParameter { ParameterName = "@serieNumero", SqlDbType = SqlDbType.VarChar, Size = 20, Value = (entrada.SerieNumero)??"" }
+            };
+
+            try
+            {
+                comprobantes = SqlHelper.ExecuteList<En_SalidaListarComprobante>("usp_ListarComprobanteElectronicos", parameters);
+                return comprobantes;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Ocurrió un error al listar los comprobantes.", ex);
+                return null;
+            }
+        }
     }
 }

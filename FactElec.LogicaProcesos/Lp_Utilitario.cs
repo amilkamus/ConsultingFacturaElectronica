@@ -11,8 +11,9 @@ namespace FactElec.LogicaProceso
 {
     public class Lp_Utilitario
     {
-        public En_Respuesta LeerRespuestaXml(string nombreArchivoDescomprimido)
+        public En_Respuesta LeerRespuestaXml(string nombreArchivoDescomprimido, bool esExcepcion)
         {
+
             string cadenaXML = "";
             En_Respuesta oRespuesta = new En_Respuesta();
             StreamReader strreader = new StreamReader(nombreArchivoDescomprimido, System.Text.Encoding.UTF8);
@@ -25,29 +26,39 @@ namespace FactElec.LogicaProceso
             XPathNavigator nav = xmlRespuesta.CreateNavigator();
             XmlNamespaceManager ns = ObtenerXmlNamespaces(nav);
 
-            foreach (XPathNavigator nodoXML in nav.Select("*/cac:DocumentResponse/cac:Response", ns))
+            if (!esExcepcion)
             {
-                oRespuesta.Codigo = NodeValue(nodoXML.SelectSingleNode("cbc:ResponseCode", ns), "");
-                oRespuesta.Descripcion = NodeValue(nodoXML.SelectSingleNode("cbc:Description", ns), "");
-            }
-
-            List<string> listaMensaje = new List<string>();
-            foreach (XPathNavigator nodoXML in nav.Select("*/cbc:Note", ns))
-            {
-                string mensaje = NodeValue(nodoXML.SelectSingleNode("cbc:ResponseCode", ns), "");
-                if (mensaje.Trim().Length > 0)
+                foreach (XPathNavigator nodoXML in nav.Select("*/cac:DocumentResponse/cac:Response", ns))
                 {
-                    listaMensaje.Add(mensaje);
+                    oRespuesta.Codigo = NodeValue(nodoXML.SelectSingleNode("cbc:ResponseCode", ns), "");
+                    oRespuesta.Descripcion = NodeValue(nodoXML.SelectSingleNode("cbc:Description", ns), "");
                 }
-            }
 
-            if (listaMensaje.Count > 0)
+                List<string> listaMensaje = new List<string>();
+                foreach (XPathNavigator nodoXML in nav.Select("*/cbc:Note", ns))
+                {
+                    string mensaje = NodeValue(nodoXML.SelectSingleNode("cbc:ResponseCode", ns), "");
+                    if (mensaje.Trim().Length > 0)
+                    {
+                        listaMensaje.Add(mensaje);
+                    }
+                }
+
+                if (listaMensaje.Count > 0)
+                {
+                    oRespuesta.Detalle = listaMensaje.ToArray();
+                }
+
+                oRespuesta.FecharespuestaSunat = NodeValue(nav.SelectSingleNode("*/cbc:ResponseDate", ns), "");
+                oRespuesta.HoraRespuestaSunat = NodeValue(nav.SelectSingleNode("*/cbc:ResponseTime", ns), "");
+            }
+            else
             {
-                oRespuesta.Detalle = listaMensaje.ToArray();
+                oRespuesta.Codigo = NodeValue(nav.SelectSingleNode("*/codigo", ns), "");
+                oRespuesta.Descripcion = NodeValue(nav.SelectSingleNode("*/mensaje", ns), "");
+                oRespuesta.FecharespuestaSunat = DateTime.Now.ToString("yyyy-MM-dd");
+                oRespuesta.HoraRespuestaSunat = DateTime.Now.ToString("HH:mm:ss");
             }
-
-            oRespuesta.FecharespuestaSunat = NodeValue(nav.SelectSingleNode("*/cbc:ResponseDate", ns), "");
-            oRespuesta.HoraRespuestaSunat = NodeValue(nav.SelectSingleNode("*/cbc:ResponseTime", ns), "");
 
             return oRespuesta;
         }
@@ -73,9 +84,10 @@ namespace FactElec.LogicaProceso
                 return node.Value ?? defaultValue;
             return defaultValue;
         }
-        public string Descomprimir(string directorio, string zipFic = "")
+        public string Descomprimir(string directorio, string zipFic, ref bool excepcion)
         {
             string RutaArchivo = string.Empty;
+            ZipInputStream z = null;
             try
             {
 
@@ -83,7 +95,7 @@ namespace FactElec.LogicaProceso
                     zipFic = Directory.GetFiles(zipFic, "*.zip")[0];
                 if (directorio == "")
                     directorio = ".";
-                ZipInputStream z = new ZipInputStream(File.OpenRead(directorio + @"\" + zipFic));
+                z = new ZipInputStream(File.OpenRead(directorio + @"\" + zipFic));
                 ZipEntry theEntry;
                 do
                 {
@@ -127,13 +139,19 @@ namespace FactElec.LogicaProceso
                 }
                 while (true);
                 z.Close();
+                excepcion = false;
                 return RutaArchivo;
             }
-            catch // (Exception ex)
+            catch
             {
-                //Log.Error(ex.Message, excepcion: ex);
+                if (z != null)
+                    z.Close();
+
+                var archivo = directorio + @"\" + zipFic;
+                File.Move(archivo, Path.ChangeExtension(archivo, ".xml"));
+                excepcion = true;
+                return Path.ChangeExtension(archivo, ".xml");
             }
-            return "";
         }
     }
 }

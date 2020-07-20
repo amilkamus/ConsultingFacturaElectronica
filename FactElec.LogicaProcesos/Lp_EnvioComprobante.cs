@@ -9,7 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.ServiceModel;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FactElec.LogicaProceso
 {
@@ -98,6 +100,23 @@ namespace FactElec.LogicaProceso
                 string mensaje = ex.Message.ToString();
                 int reintento = adComprobante.QuitarPendienteEnvio(idComprobante, codigo);
                 string mensajeReintento = (reintento == 1) ? "Se dejará de reintentar el envío de éste comprobante." : "";
+
+                // crear xml de excepción
+                StringBuilder xmlExcepcion = new StringBuilder();
+                xmlExcepcion.AppendLine("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>");
+                xmlExcepcion.AppendLine("<excepcion>");
+                xmlExcepcion.AppendFormat("<codigo>{0}</codigo>", codigo);
+                xmlExcepcion.AppendFormat("<mensaje><![CDATA[{0}]]></mensaje>",mensaje);
+                xmlExcepcion.AppendLine("</excepcion>");
+
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xmlExcepcion.ToString());
+
+                string archivoExcepcion = Path.Combine(carpetaTemporal, string.Format("EXP-{0}-{1}{2}.xml", comprobante.RucEmisor, comprobante.TipoComprobante, comprobante.SerieNumero));
+                doc.Save(archivoExcepcion);
+
+                adComprobante.InsertarCdrPendiente(idComprobante, File.ReadAllBytes(archivoExcepcion));
+                EliminarArchivo(archivoExcepcion);
 
                 log.Error(string.Format("El comprobante {0}-{1} de la empresa emisora con ruc: {2} obtuvo el código de error \"{3}\" con mensaje \"{4}\". {5}",
                     comprobante.TipoComprobante, comprobante.SerieNumero, comprobante.RucEmisor, codigo, mensaje, mensajeReintento));

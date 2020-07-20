@@ -57,8 +57,9 @@
     <Compile Include="EnvioCorreo\En_Comprobante.cs" />
     <Compile Include="EnvioCorreo\En_Correo.cs" />
     <Compile Include="GenerarPDF\En_Archivo.cs" />
-    <Compile Include="ObtenerRepresentacionImpresa\En_EntradaObtenerRI.cs" />
-    <Compile Include="ObtenerRepresentacionImpresa\En_SalidaObtenerRI.cs" />
+    <Compile Include="ListarComprobanteElectronicos\En_EntradaListarComprobante.cs" />
+    <Compile Include="ListarComprobanteElectronicos\En_SalidaListarComprobante.cs" />
+    <Compile Include="ObtenerArchivo\En_SalidaArchivo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EnvioComprobante\En_Comprobante.cs" />
     <Compile Include="RegistroComprobante\En_ComprobanteElectronico.cs" />
