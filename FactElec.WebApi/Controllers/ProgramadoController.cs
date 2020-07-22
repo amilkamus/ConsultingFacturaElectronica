@@ -35,7 +35,7 @@ namespace FactElec.WebApi.Controllers
 
                     // Generar PDF
                     Lp_GenerarPDF lpGenerarPDF = new Lp_GenerarPDF();
-                    //lpGenerarPDF.ProcesarRepresentacionImpresa();
+                    lpGenerarPDF.ProcesarRepresentacionImpresa();
 
                     // Enviar correo
                     Lp_EnvioCorreo lpEnvioCorreo = new Lp_EnvioCorreo();

@@ -216,13 +216,13 @@ namespace FactElec.LogicaProceso
 
             if (ocomprobante.AccountingCustomerParty != null)
             {
-                fila["RucReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyIdentification[0].ID.Value.ToString());
-                fila["RazonSocialReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationName.Value.ToString());
-                fila["NombreComercialReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyName[0].Name.Value.ToString());
-                fila["DepartamentoReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.CountrySubentity.Value.ToString());
-                fila["ProvinciaReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.CityName.Value.ToString());
-                fila["DistritoReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.District.Value.ToString());
-                fila["DireccionReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.AddressLine[0].Line.Value.ToString());
+                fila["RucReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyIdentification[0].ID.Value);
+                fila["RazonSocialReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationName.Value);
+                fila["NombreComercialReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyName[0].Name.Value);
+                fila["DepartamentoReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.CountrySubentity.Value);
+                fila["ProvinciaReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.CityName.Value);
+                fila["DistritoReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.District.Value);
+                fila["DireccionReceptor"] = FnValidarNulo(ocomprobante.AccountingCustomerParty.Party.PartyLegalEntity[0].RegistrationAddress.AddressLine[0].Line.Value);
             }
 
             dtReceptor.Rows.Add(fila);
