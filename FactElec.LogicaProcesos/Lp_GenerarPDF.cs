@@ -27,7 +27,7 @@ namespace FactElec.LogicaProceso
                     {
                         foreach (En_Archivo comprobante in listaComprobante)
                         {
-                            En_Archivo comprobanteParam = comprobante;
+                            En_Archivo comprobanteParam = comprobante;                            
                             GenerarPdf(comprobanteParam);
                         }
                     });
@@ -70,31 +70,32 @@ namespace FactElec.LogicaProceso
                 {
                     File.WriteAllBytes(archivoXML, comprobante.ArchivoXML);
                 }
+
+                if (comprobante.TipoComprobante == "01" || comprobante.TipoComprobante == "03")
+                {
+                    Lp_Invoice oInvoice = new Lp_Invoice();
+                    oInvoice.GenerarInvoice(comprobante);
+                }
+
+                if (comprobante.TipoComprobante == "07")
+                {
+                    Lp_CreditNote oInvoice = new Lp_CreditNote();
+                    oInvoice.GenerarCreditNote(comprobante);
+                }
+
+                if (comprobante.TipoComprobante == "08")
+                {
+                    Lp_DebitNote oInvoice = new Lp_DebitNote();
+                    oInvoice.GenerarDebitNote(comprobante);
+                }
+
             }
             catch (Exception ex)
             {
 
-                log.Error(String.Format("{0} Error : ", comprobante.NombreXML, ex.Message.ToString()));
+                log.Error(String.Format("{0} Error : {1}", comprobante.NombreXML, ex.Message.ToString()));
                 return;
-            }
-
-            if (comprobante.TipoComprobante == "01" || comprobante.TipoComprobante == "03")
-            {
-                Lp_Invoice oInvoice = new Lp_Invoice();
-                oInvoice.GenerarInvoice(comprobante);
-            }
-
-            if (comprobante.TipoComprobante == "07")
-            {
-                Lp_CreditNote oInvoice = new Lp_CreditNote();
-                oInvoice.GenerarCreditNote(comprobante);
-            }
-
-            if (comprobante.TipoComprobante == "08")
-            {
-                Lp_DebitNote oInvoice = new Lp_DebitNote();
-                oInvoice.GenerarDebitNote(comprobante);
-            }
+            }            
         }
     }
 }
