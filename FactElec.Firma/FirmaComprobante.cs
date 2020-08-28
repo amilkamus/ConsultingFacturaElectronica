@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
+using System.Configuration;
 
 namespace FactElec.Firma
 {
@@ -12,6 +13,9 @@ namespace FactElec.Firma
         public XmlDocument FirmarXml(XmlDocument xmlDoc, string ruc, ref string codigoHash, ref string firma)
         {
             XmlDocument xmlDocument = null;
+            string carpetaCertificado = "";
+            string nombreArchivoCertificado = "";
+            string total = "";
             try
             {
                 if (xmlDoc == null)
@@ -27,11 +31,19 @@ namespace FactElec.Firma
                 };
                 reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
                 signedXml.AddReference(reference);
-                string carpetaCertificado = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Certificado");
-                string nombreArchivoCertificado = string.Format("{0}.pfx", ruc);
+                carpetaCertificado = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Certificado");
+                nombreArchivoCertificado = string.Format("{0}.pfx", ruc);
                 byte[] bytesCertificado = File.ReadAllBytes(Path.Combine(carpetaCertificado, nombreArchivoCertificado));
-                X509Certificate2 certificado = new X509Certificate2(bytesCertificado, ruc); //DevuelveCertificado(ruc);
+                total = Path.Combine(carpetaCertificado, nombreArchivoCertificado);
+                log.Info("total:"+ total);
+                //X509Certificate2 certificado = new X509Certificate2(bytesCertificado, ruc); //DevuelveCertificado(ruc);
+
+                //X509Certificate2 certificado = new X509Certificate2(bytesCertificado, ConfigurationManager.AppSettings[ruc].ToString());
+                X509Certificate2 certificado = new X509Certificate2(total, ConfigurationManager.AppSettings[ruc].ToString(), X509KeyStorageFlags.MachineKeySet);
+                //X509Certificate2 certificado = new X509Certificate2(@"h:\root\home\crouillon-001\www\quypay\factelect\certificado\20602034675.pfx", ConfigurationManager.AppSettings[ruc].ToString());
                 string subjectName = certificado.SubjectName.Name;
+
+                log.Info("subjectName");
 
                 KeyInfo keyInfo = new KeyInfo();
                 try
@@ -71,7 +83,7 @@ namespace FactElec.Firma
             }
             catch (Exception exception)
             {
-                log.Error(exception.Message, exception);
+                log.Error(exception.Message + " carpetaCertificado:" + carpetaCertificado +"." + " nombreArchivoCertificado:"+ nombreArchivoCertificado + ".", exception);
                 throw;
             }
             return xmlDocument;

@@ -62,7 +62,10 @@ namespace FactElec.LogicaProceso
 
             try
             {
-                string rutaTemporal = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temporal");
+                string rutaTemporal = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temporal"); // RutaTemporalCdr("TempCDR");
+
+                //if (!Directory.Exists(rutaTemporal)) Directory.CreateDirectory(rutaTemporal);
+
                 File.WriteAllBytes(rutaTemporal + @"\" + nombreArchivoRespuesta, archivoRespuesta);
                 bool esExcepcion = false;
                 string nombreArchivoDescomprimido = oUtilitario.Descomprimir(rutaTemporal, nombreArchivoRespuesta, ref esExcepcion);

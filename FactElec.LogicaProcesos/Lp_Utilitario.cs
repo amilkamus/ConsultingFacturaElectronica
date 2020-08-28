@@ -13,7 +13,6 @@ namespace FactElec.LogicaProceso
     {
         public En_Respuesta LeerRespuestaXml(string nombreArchivoDescomprimido, bool esExcepcion)
         {
-
             string cadenaXML = "";
             En_Respuesta oRespuesta = new En_Respuesta();
             StreamReader strreader = new StreamReader(nombreArchivoDescomprimido, System.Text.Encoding.UTF8);
@@ -34,20 +33,20 @@ namespace FactElec.LogicaProceso
                     oRespuesta.Descripcion = NodeValue(nodoXML.SelectSingleNode("cbc:Description", ns), "");
                 }
 
-                List<string> listaMensaje = new List<string>();
-                foreach (XPathNavigator nodoXML in nav.Select("*/cbc:Note", ns))
+            List<string> listaMensaje = new List<string>();
+            foreach (XPathNavigator nodoXML in nav.Select("*/cbc:Note", ns))
+            {
+                string mensaje = NodeValue(nodoXML.SelectSingleNode("cbc:ResponseCode", ns), "");
+                if (mensaje.Trim().Length > 0)
                 {
-                    string mensaje = NodeValue(nodoXML.SelectSingleNode("cbc:ResponseCode", ns), "");
-                    if (mensaje.Trim().Length > 0)
-                    {
-                        listaMensaje.Add(mensaje);
-                    }
+                    listaMensaje.Add(mensaje);
                 }
+            }
 
-                if (listaMensaje.Count > 0)
-                {
-                    oRespuesta.Detalle = listaMensaje.ToArray();
-                }
+            if (listaMensaje.Count > 0)
+            {
+                oRespuesta.Detalle = listaMensaje.ToArray();
+            }
 
                 oRespuesta.FecharespuestaSunat = NodeValue(nav.SelectSingleNode("*/cbc:ResponseDate", ns), "");
                 oRespuesta.HoraRespuestaSunat = NodeValue(nav.SelectSingleNode("*/cbc:ResponseTime", ns), "");

@@ -40,7 +40,7 @@ namespace FactElec.WebApi.Controllers
                     // Enviar correo
                     Lp_EnvioCorreo lpEnvioCorreo = new Lp_EnvioCorreo();
                     lpEnvioCorreo.ProcesarRegistroCorreo();
-                    //lpEnvioCorreo.ProcesarEnvioCorreo();
+                    lpEnvioCorreo.ProcesarEnvioCorreo();
 
                     lpComprobante.QuitarProgramacion(ref mensajeRetorno);
                 }

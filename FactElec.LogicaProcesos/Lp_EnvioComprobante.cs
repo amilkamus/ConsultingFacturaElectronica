@@ -1,10 +1,12 @@
 ﻿using FactElec.CapaDatos;
 using FactElec.CapaDatos.EnvioComprobante;
+using FactElec.CapaEntidad;
 using FactElec.CapaEntidad.EnvioComprobante;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -80,6 +82,9 @@ namespace FactElec.LogicaProceso
             byte[] archivoZip = File.ReadAllBytes(rutaArchivoZIP);
             wsSUNAT.sendBillRequest sendBill = new wsSUNAT.sendBillRequest();
             wsSUNAT.billServiceClient billService = new wsSUNAT.billServiceClient();
+
+            //var behavior = new PasswordDigestBehavior(ConfigurationManager.AppSettings["usuarioruc"].ToString(), ConfigurationManager.AppSettings["clavesol"].ToString());
+            //billService.Endpoint.EndpointBehaviors.Add(behavior);
 
             try
             {

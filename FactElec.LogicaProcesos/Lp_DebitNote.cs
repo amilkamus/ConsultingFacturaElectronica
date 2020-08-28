@@ -37,7 +37,7 @@ namespace FactElec.LogicaProceso
             fila["FechaVencimiento"] = "";
             fila["TipoComprobante"] = "NOTA CREDITO ELECTRÓNICA";
 
-            if (ocomprobante.DocumentCurrencyCode.Value.ToString() == "PEN") fila["Moneda"] = "NUEVO SOL";
+            if (ocomprobante.DocumentCurrencyCode.Value.ToString() == "PEN") fila["Moneda"] = "SOLES";
             if (ocomprobante.DocumentCurrencyCode.Value.ToString() == "USD") fila["Moneda"] = "DOLAR AMERICANO";
 
             fila["MontoLetras"] = "";

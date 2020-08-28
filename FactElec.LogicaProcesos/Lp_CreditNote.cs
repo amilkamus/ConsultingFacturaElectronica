@@ -36,7 +36,7 @@ namespace FactElec.LogicaProceso
             fila["FechaVencimiento"] = "";
             fila["TipoComprobante"] = "NOTA CREDITO ELECTRÓNICA";
 
-            if (ocomprobante.DocumentCurrencyCode.Value.ToString() == "PEN") fila["Moneda"] = "NUEVO SOL";
+            if (ocomprobante.DocumentCurrencyCode.Value.ToString() == "PEN") fila["Moneda"] = "SOLES";
             if (ocomprobante.DocumentCurrencyCode.Value.ToString() == "USD") fila["Moneda"] = "DOLAR AMERICANO";
 
             fila["MontoLetras"] = "";
@@ -46,7 +46,7 @@ namespace FactElec.LogicaProceso
                 {
                     foreach (NoteType nota in ocomprobante.Note)
                     {
-                        if (nota.languageLocaleID == "1000") fila["MontoLetras"] = nota.Value.ToString();
+                        if (nota.languageLocaleID == "1000") fila["MontoLetras"] = nota.Value.ToString() + " SOLES";
                     }
                 }
             }
@@ -61,7 +61,7 @@ namespace FactElec.LogicaProceso
                     {
                         if (subTotal.TaxCategory.TaxScheme.Name.Value.ToString() == "IGV")
                         {
-                            fila["IGV"] = FnValidarNulo(subTotal.TaxAmount.Value.ToString());
+                            fila["IGV"] = "S/ " + FnValidarNulo(String.Format("{0:#,0.00}", subTotal.TaxAmount.Value.ToString()));
                         }
                     }
                 }
@@ -69,8 +69,8 @@ namespace FactElec.LogicaProceso
 
             if (ocomprobante.LegalMonetaryTotal != null)
             {
-                fila["TotalValorVentaGravada"] = FnValidarNulo(ocomprobante.LegalMonetaryTotal.LineExtensionAmount.Value.ToString());
-                fila["ImporteTotal"] = FnValidarNulo(ocomprobante.LegalMonetaryTotal.PayableAmount.Value.ToString());
+                fila["TotalValorVentaGravada"] = "S/ " + FnValidarNulo(String.Format("{0:#,0.00}", ocomprobante.LegalMonetaryTotal.LineExtensionAmount.Value.ToString()));
+                fila["ImporteTotal"] = "S/ " + FnValidarNulo(String.Format("{0:#,0.00}", ocomprobante.LegalMonetaryTotal.PayableAmount.Value.ToString()));
             }
 
             dtCabecera.Rows.Add(fila);
@@ -256,7 +256,7 @@ namespace FactElec.LogicaProceso
                     fila["VU"] = FnValidarNulo(detalle.PricingReference.AlternativeConditionPrice[0].PriceAmount.Value.ToString());
                     fila["PU"] = FnValidarNulo(detalle.PricingReference.AlternativeConditionPrice[0].PriceAmount.Value.ToString());
                     fila["Cantidad"] = FnValidarNulo(detalle.CreditedQuantity.Value.ToString());
-                    fila["ImporteSinIGV"] = FnValidarNulo(detalle.LineExtensionAmount.Value.ToString());
+                    fila["ImporteSinIGV"] = FnValidarNulo(String.Format("{0:#,0.00}", detalle.LineExtensionAmount.Value.ToString()));
                 }
             }
 
