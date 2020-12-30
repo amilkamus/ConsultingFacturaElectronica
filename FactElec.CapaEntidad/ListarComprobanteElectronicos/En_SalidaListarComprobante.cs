@@ -14,5 +14,8 @@
         public string DescripcionEstado { get; set; }
         public int IdEstado { get; set; }
         public string ComprobanteReferenciado { get; set; }
+        public decimal TotalImpuesto { get; set; }
+        public decimal TotalValorVenta { get; set; }
+        public decimal TotalDescuento { get; set; }
     }
 }
